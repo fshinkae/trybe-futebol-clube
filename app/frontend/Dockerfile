@@ -1,8 +1,8 @@
 FROM node:16-alpine
-WORKDIR /app
-COPY package*.json ./
+WORKDIR /app-frontend
+COPY package.json /app-frontend
 RUN npm install
-COPY . .
+COPY . /app-frontend
 EXPOSE 3000
 ENTRYPOINT [ "npm", "start" ]
 
