@@ -14,11 +14,6 @@ class App {
     this.app.get('/', (req, res) => res.json({ ok: true }));
   }
 
-  private routes(): void {
-    const login = new RoutesLogin();
-    this.app.use('/login', login.router);
-  }
-
   private config():void {
     const accessControl: express.RequestHandler = (_req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
@@ -33,6 +28,11 @@ class App {
 
   public start(PORT: string | number):void {
     this.app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+  }
+
+  private routes(): void {
+    const login = new RoutesLogin();
+    this.app.use('/login', login.router);
   }
 }
 

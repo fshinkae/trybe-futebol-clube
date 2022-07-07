@@ -27,6 +27,12 @@ class ServiceLogin {
       token,
     };
   }
+
+  public static async tokenValidator(tokenAuthorization: string) {
+    const tkn = tokenAuthorization;
+    const user = await LoginToken.tokenDecoded(tkn);
+    return user as IUser;
+  }
 }
 
 export default ServiceLogin;

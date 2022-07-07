@@ -17,6 +17,10 @@ class RoutesLogin {
       MiddlewareLogin.passwordValidator,
       ControllerLogin.loginSuccess,
     );
+    this.router.get(
+      '/validate',
+      ControllerLogin.loginValidator,
+    );
   }
 }
 
