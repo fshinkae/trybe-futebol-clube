@@ -14,6 +14,10 @@ class RotesTeams {
       '/',
       ControllerTeams.getAllTeams,
     );
+    this.router.get(
+      '/:id',
+      ControllerTeams.getTeamById,
+    );
   }
 }
 
