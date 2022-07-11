@@ -16,6 +16,18 @@ class ControllerMatches {
       return res.status(500).json({ message: error });
     }
   }
+
+  static async createMatch(req: Request, res: Response): Promise<Response | void> {
+    try {
+      const match = await ServiceMatches.createMatch(req.body);
+      if (!match) {
+        return res.status(401).json({ message: 'invalid matches' });
+      }
+      return res.status(201).json(match);
+    } catch (error) {
+      return res.status(500).json({ message: error });
+    }
+  }
 }
 
 export default ControllerMatches;

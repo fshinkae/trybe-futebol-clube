@@ -1,4 +1,5 @@
 import IMatches from '../interfaces/IMatches';
+import ICreateMatches from '../interfaces/ICreateMatches';
 import ModelMatches from '../database/models/ModelMatches';
 import ModelTeams from '../database/models/ModelTeams';
 
@@ -32,6 +33,11 @@ class ServiceMatches {
       }],
     });
     return matches as unknown as IMatches[];
+  }
+
+  public static async createMatch(match: ICreateMatches): Promise<ICreateMatches> {
+    const newMatch = await ModelMatches.create(match);
+    return newMatch as ICreateMatches;
   }
 }
 

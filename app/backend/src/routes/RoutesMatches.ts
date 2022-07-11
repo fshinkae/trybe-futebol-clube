@@ -14,6 +14,10 @@ class RoutesMatches {
       '/',
       ControllerMatches.getAllMatches,
     );
+    this.router.post(
+      '/',
+      ControllerMatches.createMatch,
+    );
   }
 }
 
