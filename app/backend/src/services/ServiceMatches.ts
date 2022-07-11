@@ -10,7 +10,7 @@ class ServiceMatches {
         as: 'teamHome',
         attributes: { exclude: ['id'] },
       }, {
-        model: ModelMatches,
+        model: ModelTeams,
         as: 'teamAway',
         attributes: { exclude: ['id'] },
       }],
