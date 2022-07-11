@@ -39,6 +39,30 @@ class ServiceMatches {
     const newMatch = await ModelMatches.create(match);
     return newMatch as ICreateMatches;
   }
+
+  // Created fo suport patch in /:id/finish
+  public static async selectMatchById(id: number): Promise<IMatches> {
+    const match = await ModelMatches.findOne({
+      where: { id },
+      include: [{
+        model: ModelTeams,
+        as: 'teamHome',
+        attributes: { exclude: ['id'] },
+      }, {
+        model: ModelTeams,
+        as: 'teamAway',
+        attributes: { exclude: ['id'] },
+      }],
+    });
+    return match as unknown as IMatches;
+  }
+
+  public static async finishMatch(id: number) {
+    const inProgress = false;
+    await ModelMatches.update({ inProgress }, { where: { id } });
+
+    return id;
+  }
 }
 
 export default ServiceMatches;

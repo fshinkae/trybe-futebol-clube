@@ -18,6 +18,10 @@ class RoutesMatches {
       '/',
       ControllerMatches.createMatch,
     );
+    this.router.patch(
+      '/:id/finish',
+      ControllerMatches.finishMatch,
+    );
   }
 }
 
