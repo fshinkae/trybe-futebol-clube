@@ -14,6 +14,10 @@ class RoutesLeaderboard {
       '/home',
       ControllerLeaderboard.getAllHomeDatabase,
     );
+    this.router.get(
+      '/away',
+      ControllerLeaderboard.getAllAwayDatabase,
+    );
   }
 }
 
