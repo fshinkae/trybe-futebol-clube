@@ -26,6 +26,10 @@ class RoutesMatches {
       '/:id/finish',
       ControllerMatches.finishMatch,
     );
+    this.router.patch(
+      '/:id',
+      ControllerMatches.updateMatch,
+    );
   }
 }
 

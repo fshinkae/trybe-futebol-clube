@@ -1,3 +1,4 @@
+import IUpdateMatches from '../interfaces/IUpdateMatches';
 import IMatches from '../interfaces/IMatches';
 import ICreateMatches from '../interfaces/ICreateMatches';
 import ModelMatches from '../database/models/ModelMatches';
@@ -62,6 +63,14 @@ class ServiceMatches {
     await ModelMatches.update({ inProgress }, { where: { id } });
 
     return id;
+  }
+
+  public static async updateMatch(match: IUpdateMatches): Promise<IUpdateMatches> {
+    await ModelMatches.update(
+      { homeTeamGoals: match.homeTeamGoals, awayTeamGoals: match.awayTeamGoals },
+      { where: { id: match.id } },
+    );
+    return match as IUpdateMatches;
   }
 }
 

@@ -45,6 +45,25 @@ class ControllerMatches {
       return res.status(500).json({ message: error });
     }
   }
+
+  static async updateMatch(req: Request, res: Response): Promise<Response | void> {
+    try {
+      const { id } = req.params;
+      const { homeTeamGoals, awayTeamGoals } = req.body;
+      const matchId = await ServiceMatches.selectMatchById(Number(id));
+      if (!matchId) {
+        return res.status(401).json({ message: 'No have match by id' });
+      }
+      if (matchId.inProgress === false) {
+        return res.status(401).json({
+          message: 'Unable to update a match with in progress status' });
+      }
+      const match = await ServiceMatches.updateMatch({ id, homeTeamGoals, awayTeamGoals });
+      return res.status(200).json(match);
+    } catch (error) {
+      return res.status(500).json({ message: error });
+    }
+  }
 }
 
 export default ControllerMatches;
