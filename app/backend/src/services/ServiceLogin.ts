@@ -18,12 +18,6 @@ class ServiceLogin {
     };
     const token = await LoginToken.tokenGenerator(formatReturn);
     return {
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-        email: user.email,
-      },
       token,
     };
   }

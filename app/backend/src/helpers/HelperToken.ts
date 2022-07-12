@@ -1,13 +1,14 @@
 import { SignOptions, sign, verify } from 'jsonwebtoken';
-import { readFileSync } from 'fs';
+// import { readFileSync } from 'fs';
+// import dotenv from 'dotenv';
 
 class LoginToken {
   private static _token: string;
 
-  private static _secret: string = readFileSync('src/jwt.evaluation.key', 'utf8');
+  private static _secret: string = process.env.JWT_SECRET as string;
 
   private static _jwtConfig: SignOptions = {
-    expiresIn: '10h',
+    expiresIn: '7d',
     algorithm: 'HS256',
   };
 
