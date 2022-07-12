@@ -1,5 +1,7 @@
 import * as express from 'express';
+import MiddlewareMatches from '../middlewares/MiddlewareMatches';
 import ControllerMatches from '../controllers/ControllerMatches';
+import MiddlewareToken from '../middlewares/MiddlewareToken';
 
 class RoutesMatches {
   public router: express.Router;
@@ -16,6 +18,8 @@ class RoutesMatches {
     );
     this.router.post(
       '/',
+      MiddlewareToken.tokenValidator,
+      MiddlewareMatches.matchValidate,
       ControllerMatches.createMatch,
     );
     this.router.patch(

@@ -21,6 +21,14 @@ class LoginToken {
     const tokenVerify = verify(tkn, this._secret, this._jwtConfig);
     return tokenVerify;
   }
+
+  static async tokenValidator(tkn: string) {
+    try {
+      return verify(tkn, this._secret);
+    } catch (error) {
+      return null;
+    }
+  }
 }
 
 export default LoginToken;
