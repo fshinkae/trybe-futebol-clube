@@ -1,16 +1,19 @@
 import * as sinon from 'sinon';
-import * as mocha from 'mocha'; 
+import * as chai from 'chai';
+// import * as mocha from 'mocha';
 
-// https://github.com/DefinitelyTyped/DefinitelyTyped/issues/19480
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-chai.use(chaiHttp);
-const { expect } = chai
+// @ts-ignore
+import chaiHttp = require('chai-http');
 
 import { app } from '../app';
-import { Response } from 'superagent';
 import ModelUser from '../database/models/ModelUser';
-import { userMock } from './mock/UserMock';
+import {userMock} from'./mock/UserMock';
+
+import { Response } from 'superagent';
+
+chai.use(chaiHttp);
+
+const { expect } = chai;
 
 
 describe('Testing routes by /login', () => {
@@ -27,10 +30,14 @@ describe('Testing routes by /login', () => {
     (ModelUser.findOne as sinon.SinonStub).restore()
   });
 
-  it('testing method POST in /login if return status 200 and user object and token',async () => {
-    const input = { email: 'admin@admin.com', password: 'super_senha'}
-    const { user: {id, username, role, email }, token } = chaiHttpResponse.body as any;
-    chaiHttpResponse = (await chai.request(app).post('/login').send(input));
+  it('testing method POST in /login if return status 200 and user object and token', async () => {
+    // const input = { email: 'admin@admin.com', password: 'super_senha'}
+    chaiHttpResponse = await chai
+    .request(app)
+    .post('/login')
+    .send({ email: 'admin@admin.com', password: 'secret_admin'});
+
+    const { user: {id, username, role, email }, token } = chaiHttpResponse.body.;
 
     // status HTTP test:
     expect(chaiHttpResponse.status).to.be.equal(200);
@@ -112,4 +119,5 @@ describe('Testing routes by /login', () => {
     // body test:
     expect(chaiHttpResponse.body).to.be.equal('admin');
   })
-})
+
+});
