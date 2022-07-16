@@ -1,96 +1,115 @@
-import { userMock } from './mock/UserMock';
-import { app } from '../app';
-import { Response } from 'superagent';
+import * as sinon from 'sinon';
+import * as mocha from 'mocha'; 
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/19480
-import 'chai-http';
-import * as chai from 'chai';
-chai.use(require('chai-http'));
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+chai.use(chaiHttp);
 const { expect } = chai
 
-const niceReq = {
-    email: 'admin@admin.com',
-    password: 'secret_admin'
-}
+import { app } from '../app';
+import { Response } from 'superagent';
+import ModelUser from '../database/models/ModelUser';
+import { userMock } from './mock/UserMock';
 
-const badReq = {
-    email: 'xablau@xablau.com',
-    password: 'any'
-}
 
-const reqWithoutEmail = {
-    email: '',
-    password: 'secret_admin'
-}
+describe('Testing routes by /login', () => {
 
-const reqWithoutPassword = {
-    email: 'admin@admin.com',
-    password: ''
-}
+  let chaiHttpResponse: Response;
 
-const mockUser = userMock;
-let res: Response;
+  before(async () => {
+    sinon
+    .stub(ModelUser, 'findOne')
+    .resolves(userMock as ModelUser)
+  });
 
-describe('Testing routes by /login', async() => {
+  after(() => {
+    (ModelUser.findOne as sinon.SinonStub).restore()
+  });
 
-    it('testing if return http status 200', async () => {
-        res = await chai.request(app)
-          .post('/login')
-          .send(niceReq);
-        expect(res.status).to.equal(200);
-        expect(res.body).to.have.property('token');
-        expect(res.body).to.have.property('user');
-      });
+  it('testing method POST in /login if return status 200 and user object and token',async () => {
+    const input = { email: 'admin@admin.com', password: 'super_senha'}
+    const { user: {id, username, role, email }, token } = chaiHttpResponse.body as any;
+    chaiHttpResponse = (await chai.request(app).post('/login').send(input));
+
+    // status HTTP test:
+    expect(chaiHttpResponse.status).to.be.equal(200);
+
+    // id test:
+    expect(id).to.exist;
+
+    // username tests:
+    expect(username).to.exist;
+    expect(username).to.be.equal('Admin');
+
+    //role tests:
+    expect(role).to.exist;
+    expect(role).to.be.equal('admin');
     
-      it('testing if without email return http status 400', async () => {
-        res = await chai.request(app)
-          .post('/login')
-          .send(reqWithoutEmail);
-        expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal('All fields must be filled');
-      });
-    
-      it('testing if request without password return http status 400', async () => {
-        res = await chai.request(app)
-          .post('/login')
-          .send(reqWithoutPassword);
-        expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal('All fields must be filled');
-      });
-    
-      it('testing if bad request return http status 401', async () => {
-        res = await chai.request(app)
-          .post('/login')
-          .send(badReq);
-        expect(res.status).to.equal(401);
-        expect(res.body.message).to.equal('Incorrect email or password');
-      });
-    });
-    
-    describe('Testing routes login/validate', () => {
-      it('testing if validate token return http status 200', async () => {
-        res = await chai.request(app)
-          .post('/login')
-          .send(niceReq)
-    
-        const { role , token } = res.body;
-    
-        return chai.request(app)
-          .get('/login/validate')
-          .set('authorization', token)
-          .then((Response) => {
-            expect(Response.status).equal(200);
-            expect(Response.body).equal("admin");
-          })
-      });
-    
-      it('testing if validate token return http status 401', async () => {
-        return chai.request(app)
-          .get('/login/validate')
-          .then((Response) => {
-            expect(Response.status).equal(401);
-            expect(Response.body.message).equal('Token not provided');
-          });
-      });
- })
+    // email tests:
+    expect(email).to.exist;
+    expect(email).to.be.equal('admin@admin.com');
+
+    //token tests:
+    expect(token).to.exist;
+    expect(token).to.be.a.string;
+  });
+
+  it('testing method POST in /login if returns ERROR and message when input no have body', async () => {
+    const { message } = chaiHttpResponse.body;
+
+    chaiHttpResponse = (await chai.request(app).post('/login'))
+
+    // response HTTP test:
+    expect(chaiHttpResponse.status).to.be.equal(400);
+
+    // message tests:
+    expect(message).to.exist;
+    expect(message).to.be.a.string;
+    expect(message).to.be.equal('All fields must be filled');
+  })
+
+  it('testing method POST in /login if returns ERROR and message when input body without password', async () => {
+    const input = { email: 'admin@admin.com' };
+    const { message } = chaiHttpResponse.body;
+
+    chaiHttpResponse = (await chai.request(app).post('/login').send(input))
+
+    // response HTTP test:
+    expect(chaiHttpResponse.status).to.be.equal(400);
+
+    // message tests:
+    expect(message).to.exist;
+    expect(message).to.be.a.string;
+    expect(message).to.be.equal('All fields must be filled');
+  })
+
+  it('testing method POST in /login if returns ERROR and message when input o without email', async () => {
+    const input = { password: 'super_senha' };
+    const { message } = chaiHttpResponse.body;
+
+    chaiHttpResponse = (await chai.request(app).post('/login').send(input))
+
+    // response HTTP test:
+    expect(chaiHttpResponse.status).to.be.equal(400);
+
+    // message tests:
+    expect(message).to.exist;
+    expect(message).to.be.a.string;
+    expect(message).to.be.equal('All fields must be filled');
+  })
+
+  it('testing method GET in /login returns a valid token ', async () => {
+    const input = { email: 'admin@admin.com', password: 'super_senha'}
+    const firstResponse = await chai.request(app).post('/login').send(input);
+    const { token } = firstResponse.body as any;
+
+    chaiHttpResponse = await chai.request(app).get('/login/validate').set('authorization', token)
+
+    // response HTTP test:
+    expect(chaiHttpResponse.status).to.be.equal(200);
+
+    // body test:
+    expect(chaiHttpResponse.body).to.be.equal('admin');
+  })
+})
