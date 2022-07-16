@@ -17,12 +17,13 @@ class MiddlewareLogin {
   }
 
   static async passwordValidator(req: Request, res: Response, next: NextFunction) {
+    // https://stackoverflow.com/questions/40076638/compare-passwords-bcryptjs
     const { email, password } = req.body;
+    const user = await ModelUser.findOne({ where: { email } });
 
     if (password === '' || !password) {
       return res.status(400).json({ message: 'All fields must be filled' });
     }
-    const user = await ModelUser.findOne({ where: { email } });
 
     if (user) {
       const passwordValidator = await bcryptjs.compare(password, user.password);

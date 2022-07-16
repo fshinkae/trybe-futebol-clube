@@ -18,6 +18,10 @@ class RoutesLeaderboard {
       '/away',
       ControllerLeaderboard.getAllAwayDatabase,
     );
+    this.router.get(
+      '/',
+      ControllerLeaderboard.getAllDatabase,
+    );
   }
 }
 
