@@ -37,7 +37,7 @@ describe('Testing routes by /login', () => {
     .post('/login')
     .send({ email: 'admin@admin.com', password: 'secret_admin'});
 
-    const { user: {id, username, role, email }, token } = chaiHttpResponse.body.;
+    const { user: {id, username, role, email }, token } = chaiHttpResponse.body;
 
     // status HTTP test:
     expect(chaiHttpResponse.status).to.be.equal(200);
