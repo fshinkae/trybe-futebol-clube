@@ -114,45 +114,7 @@ describe('Testing routes by /matches', () => {
 
   // });
 
-  it('POST /matches cria uma partida com sucesso.', async () => {
-    const chaiHttpResponseLogin = await chai.request(app).post('/login')
-    .send({
-      email: 'admin@admin.com',
-      password: 'secret_admin'
-    });
-    const { token } = chaiHttpResponseLogin.body as any;
-    chaiHttpResponse = await chai.request(app).post('/matches').send({
-        "homeTeam": 16,
-        "awayTeam": 8,
-        "homeTeamGoals": 2,
-        "awayTeamGoals": 2,
-        "inProgress": true
-    }).set({ 'authorization': token })
 
-    const {
-      id,
-      homeTeam,
-      homeTeamGoals,
-      awayTeam,
-      awayTeamGoals,
-      inProgress
-    } = chaiHttpResponse.body as any;
-
-    expect(chaiHttpResponse.status).to.be.equal(201);
-    console.log(chaiHttpResponse.body)
-    expect(id).to.exist;
-    expect(id).to.be.equal(1);
-    expect(homeTeam).to.exist;
-    expect(homeTeam).to.be.equal(16);
-    expect(awayTeam).to.exist;
-    expect(awayTeam).to.be.equal(8);
-    expect(homeTeamGoals).to.exist;
-    expect(homeTeamGoals).to.be.equal(2);
-    expect(awayTeamGoals).to.exist;
-    expect(awayTeamGoals).to.be.equal(2);
-    expect(inProgress).to.exist;
-    expect(inProgress).to.be.equal(true);
-  });
 
   it('Testing method UPDATE in /matches/:id/finish return status 200', async () => {
     chaiHttpResponse = await chai.request(app).patch('/matches/1/finish')
