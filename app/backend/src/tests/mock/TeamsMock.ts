@@ -1,9 +1,9 @@
-const findTeamById = {
+const oneTeamMock = {
     id: 1,
     teamName: "Avaí/Kindermann"
   }
   
-  const findAllTeams = [
+  const allTeamsMock = [
     {
       id: 1,
       teamName: "Avaí/Kindermann"
@@ -70,4 +70,4 @@ const findTeamById = {
     }
   ]
   
-  export { findTeamById, findAllTeams }
+  export { oneTeamMock, allTeamsMock }

@@ -37,7 +37,7 @@ describe('Testing routes by /login', () => {
     .post('/login')
     .send({ email: 'admin@admin.com', password: 'secret_admin'});
 
-    console.log(chaiHttpResponse.body)
+    // console.log(chaiHttpResponse.body)
     
     const { user: {id, username, role, email }, token } = chaiHttpResponse.body;
 
