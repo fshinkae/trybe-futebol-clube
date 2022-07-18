@@ -36,12 +36,12 @@ class ServiceMatches {
     return matches as unknown as IMatches[];
   }
 
-  public static async createMatch(match: ICreateMatches): Promise<ICreateMatches> {
+  public static async createMatch(match: ICreateMatches) {
     const newMatch = await ModelMatches.create(match);
     return newMatch as ICreateMatches;
   }
 
-  // Created fo suport patch in /:id/finish
+  // Created fo support patch in /:id/finish
   public static async selectMatchById(id: number): Promise<IMatches> {
     const match = await ModelMatches.findOne({
       where: { id },
