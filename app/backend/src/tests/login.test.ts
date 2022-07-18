@@ -20,13 +20,13 @@ describe('Testing routes by /login', () => {
 
   let chaiHttpResponse: Response;
 
-  before(async () => {
+  beforeEach(async () => {
     sinon
     .stub(ModelUser, 'findOne')
     .resolves(userMock as ModelUser)
   });
 
-  after(() => {
+  afterEach(() => {
     (ModelUser.findOne as sinon.SinonStub).restore()
   });
 
@@ -37,6 +37,8 @@ describe('Testing routes by /login', () => {
     .post('/login')
     .send({ email: 'admin@admin.com', password: 'secret_admin'});
 
+    console.log(chaiHttpResponse.body)
+    
     const { user: {id, username, role, email }, token } = chaiHttpResponse.body;
 
     // status HTTP test:
@@ -63,9 +65,12 @@ describe('Testing routes by /login', () => {
   });
 
   it('testing method POST in /login if returns ERROR and message when input no have body', async () => {
+    chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+
     const { message } = chaiHttpResponse.body;
 
-    chaiHttpResponse = (await chai.request(app).post('/login'))
 
     // response HTTP test:
     expect(chaiHttpResponse.status).to.be.equal(400);
@@ -107,17 +112,17 @@ describe('Testing routes by /login', () => {
   })
 
   it('testing method GET in /login returns a valid token ', async () => {
-    const input = { email: 'admin@admin.com', password: 'super_senha'}
+    const input = { email: 'admin@admin.com', password: 'secret_admin'}
     const firstResponse = await chai.request(app).post('/login').send(input);
-    const { token } = firstResponse.body as any;
+    const { token } = firstResponse.body;
 
     chaiHttpResponse = await chai.request(app).get('/login/validate').set('authorization', token)
-
+    // console.log(chaiHttpResponse.body)    
     // response HTTP test:
     expect(chaiHttpResponse.status).to.be.equal(200);
 
     // body test:
-    expect(chaiHttpResponse.body).to.be.equal('admin');
+    expect(chaiHttpResponse.body.username).to.be.equal('Admin');
   })
 
 });

@@ -17,9 +17,13 @@ class ServiceLogin {
       email: user.email,
     };
     const token = await LoginToken.tokenGenerator(formatReturn);
-    return {
-      token,
-    };
+    return { user: {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      email: user.email,
+    },
+    token };
   }
 
   public static async tokenValidator(tokenAuthorization: string) {
