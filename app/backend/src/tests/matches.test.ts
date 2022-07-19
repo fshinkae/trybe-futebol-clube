@@ -7,10 +7,15 @@ import chaiHttp = require('chai-http');
 
 import { app } from '../app';
 import ModelMatches from '../database/models/ModelMatches';
+import ModelUser from '../database/models/ModelUser';
+import ModelTeams from '../database/models/ModelTeams'
 
 import  { allMatchesMock, inProgressMatchesMock, createMatchesMock, updateMatchesMock} from './mock/MatchesMock';
 
 import { Response } from 'superagent';
+
+import {userMock} from'./mock/UserMock';
+import  { allTeamsMock } from './mock/TeamsMock'
 
 chai.use(chaiHttp);
 
@@ -20,18 +25,22 @@ describe('Testing routes by /matches', () => {
 
     let chaiHttpResponse: Response;
 
-    before(async () => {
+    beforeEach(async () => {
         sinon.stub(ModelMatches, 'findAll').resolves(allMatchesMock as any);
         sinon.stub(ModelMatches, 'findOne').resolves(inProgressMatchesMock as any);
         sinon.stub(ModelMatches, 'create').resolves(createMatchesMock as any)
         sinon.stub(ModelMatches, 'update').resolves(updateMatchesMock as any)
+        sinon.stub(ModelUser, 'findOne').resolves(userMock as ModelUser) // Ajuda trybe
+        sinon.stub(ModelTeams, 'findByPk').resolves(allTeamsMock as any) // Ajuda trybe
       });
     
-      after(() => {
+      afterEach(() => {
         (ModelMatches.findAll as sinon.SinonStub).restore();
         (ModelMatches.findOne as sinon.SinonStub).restore();
         (ModelMatches.create as sinon.SinonStub).restore();
         (ModelMatches.update as sinon.SinonStub).restore();
+        (ModelUser.findOne as sinon.SinonStub).restore(); // Ajuda trybe
+        (ModelTeams.findByPk as sinon.SinonStub).restore(); // Ajuda trybe
       });
 
   it('Testing method GET in /matches return status 200 and correct object', async () => {
@@ -84,35 +93,31 @@ describe('Testing routes by /matches', () => {
     expect(chaiHttpResponse.body[1].teamAway.teamName).to.be.equal('Santos');
   });
 
-  // it.only('Testing method POST in /matches return status 200 and create correctly matches', async () => {
+  it('Testing method POST in /matches return status 200 and create correctly matches', async () => {
+    const input = { email: 'admin@admin.com', password: 'secret_admin'}
+    const firstResponse = await chai.request(app).post('/login').send(input);
+    const { token } = firstResponse.body;
 
-  //   chaiHttpResponse = await chai.request(app).post('/matches').send({
-  //       "homeTeam": 16,
-  //       "awayTeam": 8,
-  //       "homeTeamGoals": 2,
-  //       "awayTeamGoals": 2,
-  //       "inProgress": true,
-  //   }).set({
-  //     Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJBZG1pbiIsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiaWF0IjoxNjU4MTY2NTI0LCJleHAiOjE2NTg3NzEzMjR9.xNuZlyRjV8rEvzAsCdROkMndQOA_dgDbMIt5coTyM-U'
-  //   });
-    
-    
+    const inputMatch = {
+      'homeTeam': 16,
+      'awayTeam': 8,
+      'homeTeamGoals': 2,
+      'awayTeamGoals': 2,
+      'inProgress': true,
+  }
+    chaiHttpResponse = await chai.request(app).post('/matches').send(inputMatch).set('Authorization', token)
 
-  //   expect(chaiHttpResponse.status).to.be.equal(201);
-    // expect(chaiHttpResponse.body.id).to.exist;
-    // expect(chaiHttpResponse.body.id).to.be.equal(1);
-    // expect(chaiHttpResponse.body.homeTeam).to.exist;
-    // expect(chaiHttpResponse.body.homeTeam).to.be.equal(16);
-    // expect(chaiHttpResponse.body.awayTeam).to.exist;
-    // expect(chaiHttpResponse.body.awayTeam).to.be.equal(8);
-    // expect(chaiHttpResponse.body.homeTeamGoals).to.exist;
-    // expect(chaiHttpResponse.body.homeTeamGoals).to.be.equal(2);
-    // expect(chaiHttpResponse.body.awayTeamGoals).to.exist;
-    // expect(chaiHttpResponse.body.awayTeamGoals).to.be.equal(2);
-    // expect(chaiHttpResponse.body.inProgress).to.exist;
-    // expect(chaiHttpResponse.body.inProgress).to.be.equal(true);
 
-  // });
+    expect(chaiHttpResponse.status).to.be.equal(201);
+    expect(chaiHttpResponse.body.id).to.exist;
+    expect(chaiHttpResponse.body.homeTeam).to.exist;
+    expect(chaiHttpResponse.body.awayTeam).to.exist;
+    expect(chaiHttpResponse.body.homeTeamGoals).to.exist;
+    expect(chaiHttpResponse.body.awayTeamGoals).to.exist;
+    expect(chaiHttpResponse.body.inProgress).to.exist;
+    expect(chaiHttpResponse.body.inProgress).to.be.equal(true);
+
+  });
 
 
 
